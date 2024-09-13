@@ -1,4 +1,3 @@
-"use client";
 import { Trash } from "lucide-react";
 import { Button } from "../ui/button";
 import React, { useState } from "react";
@@ -14,22 +13,39 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
+import { apiDeleteUserById } from "@/services/userService";
+import { apiDeleteCollectionById } from "@/services/collectionService";
+import { apiDeleteLotteryById } from "@/services/evaluateService";
 
 const Delete = ({ id, item }) => {
+  console.log(item);
   const [isLoadding, setIsLoadding] = useState(false);
-  const onDelete = async () => {
+  const onDelete = async (id) => {
     try {
       setIsLoadding(true);
-      const itemType = item === "product" ? "products" : "collections";
-      const res = await fetch(`/api/${itemType}/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setIsLoadding(false);
-        window.location.href = `/${itemType}`;
-        toast.success(
-          `${item === "product" ? "Product" : "Collection"} is deleted`
-        );
+      if (item === "customers") {
+        const data = await apiDeleteUserById(id);
+        if (data?.success) {
+          setIsLoadding(false);
+          window.location.href = `/${item}`;
+          toast.success(`${item} is deleted`);
+        }
+      }
+      if (item === "collection") {
+        const data = await apiDeleteCollectionById(id);
+        if (data?.success) {
+          setIsLoadding(false);
+          window.location.href = `/${item}`;
+          toast.success(`${item} is deleted`);
+        }
+      }
+      if (item === "lottery") {
+        const data = await apiDeleteLotteryById(id);
+        if (data?.success) {
+          setIsLoadding(false);
+          window.location.href = `/${item}`;
+          toast.success(`${item} is deleted`);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -49,15 +65,14 @@ const Delete = ({ id, item }) => {
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            {item}.
+            Hành động này không thể khôi phục lại.Bạn chắc chắn muốn xóa không?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             className="bg-red-500 text-white"
-            onClick={onDelete}
+            onClick={() => onDelete(id)}
           >
             Continue
           </AlertDialogAction>

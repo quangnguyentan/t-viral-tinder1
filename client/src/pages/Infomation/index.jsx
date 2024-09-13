@@ -30,19 +30,6 @@ const Information = () => {
             </div>
           </div>
           <div className="flex flex-col gap-4">
-            <div className="flex justify-between px-4 py-2">
-              <span>Ảnh đại diện</span>
-              <div className="flex items-center gap-2 ">
-                <img
-                  className="w-[20px] h-[20px]"
-                  src={
-                    currentData?.avatar?.length > 0 ? currentData?.avatar : user
-                  }
-                  alt=""
-                />
-                <ChevronRight />
-              </div>
-            </div>
             <div className="w-[90%] mx-auto h-[0.5px] bg-[#ebedf0]"></div>
             <div
               className="flex justify-between px-4 py-2"
@@ -50,7 +37,11 @@ const Information = () => {
             >
               <span>Họ tên thật</span>
               <div className="flex items-center gap-2 ">
-                <span>{currentData?.username}</span>
+                <span>
+                  {currentData?.fullName
+                    ? currentData?.fullName
+                    : currentData?.username}
+                </span>
                 <ChevronRight />
               </div>
             </div>

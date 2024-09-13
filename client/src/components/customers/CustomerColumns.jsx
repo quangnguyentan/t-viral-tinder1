@@ -10,19 +10,22 @@ export const columns = [
       </Link>
     ),
   },
-  {
-    accessorKey: "password",
-    header: "Mật khẩu",
-    cell: ({ row }) => <div>{row.original.password}</div>,
-  },
+
   {
     accessorKey: "role",
     header: "Vai trò",
     cell: ({ row }) => <div>{row.original.role}</div>,
   },
   {
+    accessorKey: "withDraw",
+    header: "Số tiền hiện tại",
+    cell: ({ row }) => (
+      <div>{row.original.withDraw.toLocaleString("vi-VN") + "₫"}</div>
+    ),
+  },
+  {
     header: "Xóa",
     id: "actions",
-    cell: ({ row }) => <Delete item="collection" id={row.original._id} />,
+    cell: ({ row }) => <Delete item="customers" id={row.original._id} />,
   },
 ];

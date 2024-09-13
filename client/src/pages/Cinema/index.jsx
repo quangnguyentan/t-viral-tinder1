@@ -41,28 +41,31 @@ const Cinema = ({ currentData }) => {
         </div>
         <TabsContent value="hot">
           <div className="grid grid-cols-2 pl-3">
-            {collections?.map((collection) => (
-              <>
-                <div className="relative mb-4  w-[180px]  h-[153px]">
-                  <Link
-                    key={collection?._id}
-                    to={`/video/${collection?.title.replace(/ /g, "_")}/${
-                      collection?._id
-                    }/${currentData?._id}`}
-                  >
-                    <img
-                      src={`http://localhost:8080/images/${collection.image}`}
-                      className="w-full h-full rounded-xl"
-                      alt=""
-                    />
-                    <div className="absolute w-full px-4 text-white  bg-[rgba(0,0,0,.4)] bottom-0 z-0 flex items-center justify-between">
-                      <span>{collection.title}</span>
-                      <span>Xem: {collection?.view?.length}</span>
-                    </div>
-                  </Link>
-                </div>
-              </>
-            ))}
+            {collections
+              ?.filter((fill) => fill?.category?.includes("hot"))
+              ?.map((collection) => (
+                <>
+                  <div className="relative mb-4  w-[180px]  h-[153px]">
+                    <Link
+                      key={collection?._id}
+                      to={`/video/${collection?.title.replace(/ /g, "_")}/${
+                        collection?._id
+                      }/${currentData?._id}`}
+                    >
+                      <img
+                        // src={`http://localhost:8080/images/${collection.image}`}
+                        src={`https://sexyloveeu.com/images/${collection?.image}`}
+                        className="w-full h-full rounded-xl"
+                        alt=""
+                      />
+                      <div className="absolute w-full px-4 text-white  bg-[rgba(0,0,0,.4)] bottom-0 z-0 flex items-center justify-between">
+                        <span>{collection.title}</span>
+                        <span>Xem: {collection?.view?.length}</span>
+                      </div>
+                    </Link>
+                  </div>
+                </>
+              ))}
           </div>
         </TabsContent>
         <TabsContent value="vn">
@@ -79,7 +82,8 @@ const Cinema = ({ currentData }) => {
                       }/${currentData?._id}`}
                     >
                       <img
-                        src={`http://localhost:8080/images/${collection.image}`}
+                        // src={`http://localhost:8080/images/${collection.image}`}
+                        src={`https://sexyloveeu.com/images/${collection?.image}`}
                         className="w-full h-full rounded-xl"
                         alt=""
                       />
@@ -94,7 +98,6 @@ const Cinema = ({ currentData }) => {
           </div>
         </TabsContent>
         <TabsContent value="jp">
-          {" "}
           <div className="grid grid-cols-2 pl-3">
             {collections
               ?.filter((fill) => fill?.category?.includes("jp"))
@@ -108,7 +111,8 @@ const Cinema = ({ currentData }) => {
                       }/${currentData?._id}`}
                     >
                       <img
-                        src={`http://localhost:8080/images/${collection.image}`}
+                        // src={`http://localhost:8080/images/${collection.image}`}
+                        src={`https://sexyloveeu.com/images/${collection?.image}`}
                         className="w-full h-full rounded-xl"
                         alt=""
                       />
@@ -123,7 +127,6 @@ const Cinema = ({ currentData }) => {
           </div>
         </TabsContent>
         <TabsContent value="hk">
-          {" "}
           <div className="grid grid-cols-2 pl-3">
             {collections
               ?.filter((fill) => fill?.category?.includes("hk"))
@@ -137,7 +140,8 @@ const Cinema = ({ currentData }) => {
                       }/${currentData?._id}`}
                     >
                       <img
-                        src={`http://localhost:8080/images/${collection.image}`}
+                        // src={`http://localhost:8080/images/${collection.image}`}
+                        src={`https://sexyloveeu.com/images/${collection?.image}`}
                         className="w-full h-full rounded-xl"
                         alt=""
                       />
@@ -166,7 +170,8 @@ const Cinema = ({ currentData }) => {
                       }/${currentData?._id}`}
                     >
                       <img
-                        src={`http://localhost:8080/images/${collection.image}`}
+                        // src={`http://localhost:8080/images/${collection.image}`}
+                        src={`https://sexyloveeu.com/images/${collection?.image}`}
                         className="w-full h-full rounded-xl"
                         alt=""
                       />

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import danhgia1 from "@/assets/danhgia1.jpg";
 import { useEffect, useRef, useState } from "react";
 import {
+  apiGetCountDown,
   apiGetLotteryById,
   apiUpdateLottery,
   apiUpdateUserIntoRoom,
@@ -13,6 +14,7 @@ import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrent } from "@/stores/actions/userAction";
 import { useForm } from "react-hook-form";
+import { Skeleton } from "@/components/ui/skeleton";
 var connectOptions = {
   transports: ["websocket"],
 };
@@ -52,23 +54,24 @@ const DetailEvalute = () => {
   // const [seconds, setSeconds] = useState(180);
   const [selectedItems, setSelectedItems] = useState([]);
   const [hoverActive, setHoverActive] = useState(true);
-  const [moneyInput, setMoneyInput] = useState(null);
   const [active, setActive] = useState(false);
   const [lottery, setLottery] = useState(null);
   const { id } = useParams();
+  const { roomId, userId, time } = useParams();
+
   const navigate = useNavigate();
   const { currentData } = useSelector((state) => state.user);
   const { isLoggedIn, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   useEffect(() => {
-    if (isLoggedIn && token) {
-      setTimeout(() => {
-        dispatch(getCurrent());
-      }, 1000);
-    }
-  }, [isLoggedIn, token]);
+    setTimeout(() => {
+      dispatch(getCurrent());
+    }, 1000);
+  }, []);
+
   const handleSelect = (e, name) => {
     e.preventDefault();
+    e.stopPropagation();
     let newSelected = [...selectedItems]; // Assuming you have 'selectedItems' state
 
     // Check if the clicked element is already selected (includes)
@@ -93,66 +96,117 @@ const DetailEvalute = () => {
     newSelected.sort();
     setSelectedItems(newSelected);
   };
-  const { roomId, userId } = useParams();
-  const apiGetDetailsLottery = async () => {
+  const apiGetDetailsLottery = async (roomId, userId) => {
     const data = await apiGetLotteryById(roomId, userId);
     if (data?.success) setLottery(data?.evaluates);
   };
   const apiUpdateEvaluate = async (values) => {
-    // console.log(values?.money);
-    localStorage.setItem("pay", values.money);
-    setMoneyInput(values?.money);
     const data = await apiUpdateLottery(roomId, userId, {
       money: values?.money,
       result: selectedItems,
     });
-    console.log(data);
+
+    if (data?.success) {
+      toast.success(data?.message);
+    } else {
+      toast.error(data?.message);
+    }
   };
   useEffect(() => {
-    apiGetDetailsLottery();
-  }, []);
-  const apiUpdateUserRoom = async () => {
-    const money = JSON.parse(localStorage.getItem("pay"));
-    const data = await apiUpdateUserIntoRoom(roomId, userId, {
-      money: money || Number(moneyInput),
-    });
+    apiGetDetailsLottery(roomId, userId);
+  }, [roomId, userId]);
+  const apiUpdateUserRoom = async (roomId, userId) => {
+    // const data = await apiUpdateUserIntoRoom(roomId, userId, {
+    //   money: money || Number(moneyInput),
+    // });
+    const data = await apiUpdateUserIntoRoom(roomId, userId);
     console.log(data);
+    // if (data?.success) {
+    //   toast.success(data?.message);
+    // } else {
+    //   toast.error(data?.message);
+    // }
+  };
+  const apiUpdatedCountDown = async () => {
+    const data = await apiGetCountDown();
+    console.log(data);
+
+    // if (data?.success) {
+    //   toast.success(data?.message);
+    // } else {
+    //   toast.error(data?.message);
+    // }
   };
 
-  const socket = io.connect("http://localhost:8080", connectOptions);
+  // const socket = io.connect("http://localhost:8080", connectOptions);
+  // useEffect(() => {
+  //   socket.on("receive_time", async (data) => {
+  //     const inner = document.getElementById("timer");
+
+  //     if (inner) {
+  //       // Clear all existing child elements
+  //       inner.innerHTML = "";
+  //       const timeElement = document.createElement("div");
+  //       timeElement.textContent = `${data.hours} : ${data.minutes} : ${data.remainingSeconds}`;
+  //       inner.appendChild(timeElement);
+  //     }
+  //     if (
+  //       data.hours === 0 &&
+  //       data.minutes === 0 &&
+  //       data.remainingSeconds <= 1
+  //     ) {
+  //       await apiUpdateUserRoom();
+  //     }
+  //   });
+  // }, [socket]);
   useEffect(() => {
-    socket.on("receive_time", async (data) => {
-      const inner = document.getElementById("timer");
-      // if (inner.lastChild) {
-      //   inner.remove();
-      // }
-      // if (inner) {
-      //   inner.innerHTML = `${data.hours} : ${data.minutes} : ${data.remainingSeconds}`;
-      // }
-      if (inner) {
-        // Clear all existing child elements
-        inner.innerHTML = "";
-        const timeElement = document.createElement("div");
-        timeElement.textContent = `${data.hours} : ${data.minutes} : ${data.remainingSeconds}`;
-        inner.appendChild(timeElement);
+    const countdownElement = document.getElementById("countdown");
+
+    // Lấy thời gian kết thúc từ Local Storage hoặc đặt mặc định nếu chưa có
+    let endTime = localStorage.getItem("endTime");
+    if (!endTime) {
+      endTime = new Date().getTime() + Number(time) * 60 * 1000; // 3 phút từ bây giờ
+      localStorage.setItem("endTime", endTime);
+    }
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = endTime - now;
+      const hours = Math.floor(distance / (1000 * 60 * 60))
+        .toString()
+        .padStart(2, "0");
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+        .toString()
+        .padStart(2, "0");
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000)
+        .toString()
+        .padStart(2, "0");
+
+      countdownElement.textContent = hours + " : " + minutes + " : " + seconds;
+      if (distance <= 0) {
+        clearInterval(intervalId);
+        apiUpdatedCountDown();
+        setTimeout(() => {
+          apiUpdateUserRoom(roomId, userId);
+          window.location.reload();
+          endTime = new Date().getTime() + Number(time) * 60 * 1000; // 3 phút từ bây giờ
+          localStorage.setItem("endTime", endTime);
+        }, 1000);
       }
-      // console.log(lottery?.periodNumber.length + 1 === );
-      if (
-        data.hours === 0 &&
-        data.minutes === 0 &&
-        data.remainingSeconds === 0
-      ) {
-        apiUpdateUserRoom();
-        location.reload();
-        localStorage.removeItem("pay");
-      }
-    });
-  }, [socket]);
+    }
+
+    // Cập nhật đếm ngược mỗi giây
+    let intervalId = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    return () => clearInterval(intervalId);
+  }, []);
   return (
     <div className="md:w-[50%] sm:w-full mx-auto bg-gray-100 h-screen relative">
       <div className="sticky w-full top-0">
         <ChevronLeft
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             localStorage.setItem("page", 1);
             navigate("/");
           }}
@@ -164,25 +218,38 @@ const DetailEvalute = () => {
             Đánh giá {id}
           </span>
         </div>
-        {/* <div onClick={apiUpdateUserRoom}>abc</div> */}
       </div>
 
       <div className="shadow-xl">
         <div className="flex items-center justify-between px-4 pt-4 pb-10">
           <div className="flex gap-4 items-center">
             <div className="w-[60px] h-[60px]">
-              <img src={danhgia1} alt="" className="w-full h-full" />
+              {lottery?.image ? (
+                <img
+                  src={`https://sexyloveeu.com/images/${lottery?.image}`}
+                  alt=""
+                  className="w-full h-full"
+                />
+              ) : (
+                <Skeleton className="w-full bg-gray-400 h-full rounded-full" />
+              )}
             </div>
-            <span className="font-semibold text-xl">
-              {lottery?.periodNumber?.length + 1}
-            </span>
+            {lottery?.periodNumber ? (
+              <span className="font-semibold text-xl">
+                {lottery?.periodNumber?.length + 1}
+              </span>
+            ) : (
+              <Skeleton className="h-[30px] w-[120px] bg-gray-300 rounded-xl" />
+            )}
           </div>
           <div className="flex flex-col gap-4 items-center">
             <span className="text-pink-700">Lịch sử đánh giá</span>
             <p hidden id="timeHidden" className=" text-xl text-red-500"></p>
-            <p id="timer" className=" text-xl text-red-500"></p>
+            {/* <p id="timer" className=" text-xl text-red-500"></p> */}
+            <p id="countdown" className=" text-xl text-red-500"></p>
           </div>
         </div>
+
         <div className="w-[90%] mx-auto rounded-full h-[2px] bg-borderColor"></div>
         <div className="relative">
           <div className="flex items-center justify-between px-4 py-2">
@@ -193,14 +260,21 @@ const DetailEvalute = () => {
                   {lottery?.periodNumber?.at(-1)} :
                 </span>
               </span>
-              <span className="text-blue-500 font-medium">D</span>
-              <span className="text-pink-800 font-medium">B</span>
+              <span className="text-blue-500 flex items-center  gap-8 font-medium">
+                {lottery?.result?.at(-1)?.map((el, index) => (
+                  <span key={index}>{el}</span>
+                ))}
+              </span>
             </div>
             <ChevronDown
               className={`transition cursor-pointer duration-150 ease-in-out ${
                 active ? "rotate-180" : ""
               }`}
-              onClick={() => setActive(!active)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setActive(!active);
+              }}
             />
           </div>
           {active && (
@@ -240,7 +314,6 @@ const DetailEvalute = () => {
                           {lot?.map((el) => (
                             <span key={el + index}>{el}</span>
                           ))}
-                          {/* lot?.join(" ")?.split(" ").indexOf(el) */}
                         </span>
                       ))}
                   </div>
@@ -254,7 +327,11 @@ const DetailEvalute = () => {
         {result?.map((rs) => (
           <button
             key={rs?.id}
-            onClick={(e) => handleSelect(e, rs?.name)}
+            onClick={(e) => {
+              e.stopPropagation();
+
+              handleSelect(e, rs?.name);
+            }}
             className={`w-full h-[160px] rounded-xl ${
               selectedItems?.includes(rs?.name) ? "bg-red-500" : "bg-white"
             }`}
@@ -286,7 +363,7 @@ const DetailEvalute = () => {
         <div className="w-full h-[70px] bg-white absolute bottom-0">
           <div className="flex items-center py-2 justify-between px-4 relative ">
             {selectedItems?.length > 0 && hoverActive && (
-              <div className="absolute bottom-[70px] w-full h-[120px] bg-white border-b-2 left-0">
+              <div className="absolute bottom-[90px] w-full h-[120px] bg-white border-b-2 left-0">
                 <div className="flex items-center justify-between px-4 py-2">
                   <div className="flex gap-4 items-center">
                     <span>Lựa chọn của bạn</span>
@@ -298,7 +375,10 @@ const DetailEvalute = () => {
                     className={`transition cursor-pointer duration-150 ease-in-out ${
                       hoverActive ? "rotate-180" : ""
                     }`}
-                    onClick={() => setHoverActive(!hoverActive)}
+                    onClick={(e) => {
+                      setHoverActive(!hoverActive);
+                      e.stopPropagation();
+                    }}
                   />
                 </div>
                 <div className="flex items-center justify-between px-4 py-2">
@@ -306,12 +386,12 @@ const DetailEvalute = () => {
                   <input
                     type="number"
                     placeholder="Vui lòng nhập số tiền"
-                    className="outline-none text-red-500"
+                    className="outline-none text-red-500 font-semibold"
                     {...register("money", { required: true })}
-                    aria-invalid={errors.moeny ? "true" : "false"}
+                    // aria-invalid={errors.moeny ? "true" : "false"}
                   />
-                  {errors.money?.type === "required" &&
-                    toast.error("Vui lòng nhập số tiền bạn muốn đặt")}
+                  {/* {errors.money?.type === "required" &&
+                    toast.error("Vui lòng nhập số tiền bạn muốn đặt")} */}
                 </div>
                 <div className="flex items-center justify-between px-4 py-2">
                   <span className="flex items-center gap-2">
@@ -323,15 +403,15 @@ const DetailEvalute = () => {
                   <span className="flex items-center gap-2">
                     Toàn bộ
                     <span className="text-red-500 font-bold">
-                      {currentData?.withDraw}
+                      {currentData?.withDraw.toLocaleString("vi-VN") + "₫"}
                     </span>
                   </span>
                 </div>
               </div>
             )}
 
-            <div className="flex items-center gap-12 ">
-              <div className="flex flex-col gap-2 items-center ">
+            <div className="flex items-center gap-6 ">
+              <div className="flex flex-col gap-2 justify-center ">
                 <ShoppingCart
                   size={22}
                   onClick={() => {
@@ -342,12 +422,14 @@ const DetailEvalute = () => {
               </div>
               <span className="w-[2px] h-[40px] bg-gray-500"></span>
             </div>
-            <div className="flex items-center gap-4">
-              <span>
-                Số tiền hiện có:{" "}
-                <span className="text-red-500">{currentData?.withDraw}</span>
+            <div className="flex items-start gap-4  ">
+              <span className="flex flex-col ">
+                Số tiền hiện có:
+                <span className="text-red-500">
+                  {currentData?.withDraw.toLocaleString("vi-VN") + "₫"}
+                </span>
               </span>
-              <button className="rounded-2xl bg-profileColor px-4 py-2 ">
+              <button className="rounded-2xl bg-profileColor px-6 py-2 ">
                 Đánh giá
               </button>
             </div>

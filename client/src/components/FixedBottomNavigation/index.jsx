@@ -35,7 +35,7 @@ export default function FixedBottomNavigation() {
       page: <Evalute currentData={currentData} />,
     },
     {
-      page: <Province />,
+      // page: <Province />,
     },
     {
       page: <Cinema currentData={currentData} />,
@@ -55,9 +55,9 @@ export default function FixedBottomNavigation() {
   return (
     <Box
       sx={{
-        pb: 7,
-        width: "sm:100% md:50% ",
-        mx: "sm:0 md:auto",
+        pb: 20,
+        width: "sm:100% lg:50%",
+        mx: "sm:0 lg:auto",
         bgcolor: "#f2f2f5",
       }}
     >
@@ -65,13 +65,16 @@ export default function FixedBottomNavigation() {
       {activeComponent}
       <Paper
         sx={{
-          py: 2,
+          py: 4,
           position: "fixed",
           bottom: 0,
           left: 0,
           right: 0,
-          width: "md:100% md:50%",
-          mx: "sm:0 md:auto",
+          width: "sm:100% lg:50%",
+          mx: "sm:0 lg:auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
         elevation={3}
       >
@@ -80,6 +83,7 @@ export default function FixedBottomNavigation() {
           value={value}
           onChange={(event, newValue) => {
             localStorage.setItem("page", newValue);
+            if (newValue === 2) return;
             setValue(newValue);
           }}
         >
@@ -93,7 +97,7 @@ export default function FixedBottomNavigation() {
                 color: "rebeccapurple",
               },
             }}
-            icon={<HomeIcon sx={{ fontSize: 20 }} />}
+            icon={<HomeIcon sx={{ fontSize: 35 }} />}
           />
           <BottomNavigationAction
             label="Sảnh đánh giá"
@@ -105,7 +109,7 @@ export default function FixedBottomNavigation() {
                 color: "rebeccapurple",
               },
             }}
-            icon={<AccessAlarmIcon sx={{ fontSize: 20 }} />}
+            icon={<AccessAlarmIcon sx={{ fontSize: 35 }} />}
           />
 
           <BottomNavigationAction
@@ -116,7 +120,7 @@ export default function FixedBottomNavigation() {
                 color: "rebeccapurple",
               },
             }}
-            icon={<WavesIcon sx={{ fontSize: 40 }} />}
+            icon={<WavesIcon sx={{ fontSize: 50 }} />}
           />
           <BottomNavigationAction
             label="Rạp chiếu phim"
@@ -128,7 +132,7 @@ export default function FixedBottomNavigation() {
                 color: "rebeccapurple",
               },
             }}
-            icon={<LiveTvIcon sx={{ fontSize: 20 }} />}
+            icon={<LiveTvIcon sx={{ fontSize: 35 }} />}
           />
           <BottomNavigationAction
             label="Hồ sơ"
@@ -140,7 +144,7 @@ export default function FixedBottomNavigation() {
                 color: "rebeccapurple",
               },
             }}
-            icon={<PersonIcon sx={{ fontSize: 20 }} />}
+            icon={<PersonIcon sx={{ fontSize: 35 }} />}
           />
         </BottomNavigation>
       </Paper>

@@ -26,53 +26,53 @@ export default function SlickSlider() {
     <div className="slider-container relative">
       <div className="absolute w-full h-[155px] bg-profileColor"></div>
       <Slider {...settings} className="absolute top-[50px]">
-        <div className="w-[90%] h-full object-cover">
+        <div className="sm:w-[90%] md:w-[70%] sm:h-full md:h-[320px] sm:object-contain md:object-cover">
           <img
             src={image1}
             alt="image_1"
-            className="w-[90%] mx-auto object-cover "
+            className="sm:w-[90%] md:w-[70%] sm:mx-auto sm:object-cover "
           />
         </div>
-        <div className="w-[90%] h-full object-cover">
+        <div className="sm:w-[90%] md:w-[70%] sm:h-full md:h-[320px] sm:object-contain md:object-cover">
           <img
             src={image2}
             alt="image_1"
-            className="w-[90%] mx-auto object-cover "
+            className="sm:w-[90%] md:w-[70%] sm:mx-auto sm:object-cover "
           />
         </div>
-        <div className="w-[90%] h-full object-cover">
+        <div className="sm:w-[90%] md:w-[70%] sm:h-full md:h-[320px] sm:object-contain md:object-cover">
           <img
             src={image3}
             alt="image_1"
-            className="w-[90%] mx-auto object-cover "
+            className="sm:w-[90%] md:w-[70%] sm:mx-auto sm:object-cover "
           />
         </div>
-        <div className="w-[90%] h-full object-cover">
+        <div className="sm:w-[90%] md:w-[70%] sm:h-full md:h-[320px] sm:object-contain md:object-cover">
           <img
             src={image4}
             alt="image_1"
-            className="w-[90%] mx-auto object-cover "
+            className="sm:w-[90%] md:w-[70%] sm:mx-auto sm:object-cover "
           />
         </div>
-        <div className="w-[90%] h-full object-cover">
+        <div className="sm:w-[90%] md:w-[70%] sm:h-full md:h-[320px] sm:object-contain md:object-cover">
           <img
             src={image5}
             alt="image_1"
-            className="w-[90%] mx-auto object-cover "
+            className="sm:w-[90%] md:w-[70%] sm:mx-auto sm:object-cover "
           />
         </div>
-        <div className="w-[90%] h-full object-cover">
+        <div className="sm:w-[90%] md:w-[70%] sm:h-full md:h-[320px] sm:object-contain md:object-cover">
           <img
             src={image6}
             alt="image_1"
-            className="w-[90%] mx-auto object-cover "
+            className="sm:w-[90%] md:w-[70%] sm:mx-auto sm:object-cover "
           />
         </div>
-        <div className="w-[90%] h-full object-cover">
+        <div className="sm:w-[90%] md:w-[70%] sm:h-full md:h-[320px] sm:object-contain md:object-cover">
           <img
             src={image7}
             alt="image_1"
-            className="w-[90%] mx-auto object-cover "
+            className="sm:w-[90%] md:w-[70%] mx-auto sm:object-cover "
           />
         </div>
       </Slider>

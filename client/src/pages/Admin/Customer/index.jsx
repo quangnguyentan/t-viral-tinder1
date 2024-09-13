@@ -32,10 +32,10 @@ const Customers = () => {
   ) : (
     <div className="px-10 py-5">
       <div className="flex items-center justify-between">
-        <p className="text-heading2-bold">Người dùng</p>
+        <p className="text-xl font-semibold">Quản lí người dùng</p>
         <Button
           className="bg-red-500 text-white"
-          onClick={() => navigate("/admin/customer/new")}
+          onClick={() => navigate("/customer/new")}
         >
           <Plus className="h-4 w-4 mr-2" />
           Thêm người dùng

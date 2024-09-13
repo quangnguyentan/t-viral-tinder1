@@ -62,10 +62,16 @@ const WithDrawalHistory = () => {
                       <span className="text-lg font-semibold text-gray-500">
                         Nội dung
                       </span>
-                      {/* <span className="text-lg font-bold">
-                        {withDraw?.withDraw[index]}
-                      </span> */}
+                      <span className="text-lg font-bold">{el?.status}</span>
                     </div>
+                    {el?.reson?.length > 0 && (
+                      <div className="flex flex-col gap-2">
+                        <span className="text-lg font-semibold text-gray-500">
+                          Nội dung
+                        </span>
+                        <span className="text-lg font-bold">{el?.reson}</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

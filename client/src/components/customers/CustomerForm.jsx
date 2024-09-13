@@ -13,22 +13,25 @@ import { Textarea } from "../ui/textarea";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Delete from "../custom ui/Delete";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiCreateCollection } from "@/services/collectionService";
+import {
+  apiUpdatedDesposit,
+  apiUpdatedWithDrawAndDeposit,
+} from "@/services/userService";
 
 const CustomerForm = ({ initialData }) => {
   const navigate = useNavigate();
   const [isLoadding, setIsLoadding] = useState(false);
   const [invisible, setInvisible] = useState(false);
+  const { id } = useParams();
   const { register, handleSubmit, watch, setValue, getValues, onChange } =
     useForm({
       defaultValues: initialData
         ? initialData
         : {
-            image: "",
-            title: "",
-            video: "",
-            category: "",
+            desposit: "",
+            vip: "",
           },
     });
   const handleKeyPress = (e) => {
@@ -39,27 +42,18 @@ const CustomerForm = ({ initialData }) => {
   const onSubmit = async (values) => {
     try {
       setIsLoadding(true);
-      // const url = initialData
-      //   ? `/api/collections/${initialData?._id}`
-      //   : "/api/collections/new";
-      const formData = new FormData();
-      const selectedFile = getValues().image[0];
-      const selectedVideo = getValues().video[0];
-      if (selectedFile && selectedVideo) {
-        formData.append("images", selectedFile, selectedFile.name);
-        formData.append("videos", selectedVideo, selectedVideo.name);
-      }
 
-      formData.append("title", values.title);
-      formData.append("category", values.category);
-      console.log(formData);
-      const res = await apiCreateCollection(formData);
-      console.log(res);
+      const res = await apiUpdatedDesposit(id, {
+        desposit: values?.desposit,
+        vip: values?.vip,
+      });
+
       if (res.success) {
         setIsLoadding(false);
-        toast.success(`Collection ${initialData ? "updated" : "created"} `);
-        // window.location.href = "/collections";
-        navigate("/collection");
+        toast.success(res?.message);
+        navigate("/customers");
+      } else {
+        toast.error(res?.message);
       }
     } catch (error) {
       console.log("[collections_POST]", error);
@@ -70,77 +64,59 @@ const CustomerForm = ({ initialData }) => {
   return (
     <div className="p-10">
       {initialData ? (
-        <div className="flex items-center justify-center">
-          <p className="text-heading2-bold">Edit Collection</p>
+        <div className="flex items-center justify-center gap-4">
+          <p className="text-xl font-semibold">
+            Chỉnh sửa người dùng và nạp tiền
+          </p>
           <Delete item="collection" id={initialData?._id} />
         </div>
       ) : (
-        <p className="text-heading2-bold">Create Collection</p>
+        <p className="text-xl font-semibold">Thêm người dùng</p>
       )}
 
       <Separator className="bg-grey-1 mt-4 mb-7" />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <label>Nạp tiền:</label>
+
         <Input
-          {...register("title")}
-          placeholder="Tên tiêu đề"
+          {...register("desposit")}
+          placeholder="Số tiền cần nộp"
           onKeyDown={handleKeyPress}
         />
         <div className="flex items-center gap-4">
-          <label for="category">Thể loại:</label>
-          <select
-            onClick={() => setInvisible(!invisible)}
-            className="border px-4 border-black"
-            {...register("category")}
-          >
-            {!invisible && <option value="">Thể loại</option>}
-            <option value="hot">Hot</option>
-            <option value="vn">Việt Nam</option>
-            <option value="jp">Nhật Bản</option>
-            <option value="hk">Hong Kong</option>
-            <option value="gay">Gay</option>
+          <label for="vip">Chọn Vip cho khách hàng (không bắt buộc):</label>
+          <select className="border px-4 border-black" {...register("vip")}>
+            <option value="vip0">Vip 0</option>
+            <option value="vip1">Vip 1</option>
+            <option value="vip2">Vip 2</option>
+            <option value="vip3">Vip 3</option>
+            <option value="vip4">Vip 4</option>
+            <option value="vip5">Vip 5</option>
+            <option value="vip6">Vip 6</option>
+            <option value="vip7">Vip 7</option>
+            <option value="vip8">Vip 8</option>
+            <option value="vip9">Vip 9</option>
+            <option value="vip10">Vip 10</option>
           </select>
         </div>
-        <Input
+        {/* <Input
           type="file"
           {...register("image", { onChange })}
           placeholder="Image"
           // onKeyDown={handleKeyPress}
           // accept="image/*"
-        />
-        <Input
-          type="file"
-          {...register("video")}
-          placeholder="video"
-          onKeyDown={handleKeyPress}
-        />
-        {/* <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Image</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    value={field.value ? [field.value] : []}
-                    onChange={(url) => field.onChange(url)}
-                    onRemove={() => field.onChange("")}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
+        /> */}
 
         <div className="flex gap-10">
           <Button type="submit" className="bg-blue-500 text-white">
-            Submit
+            Gửi
           </Button>
           <Button
             type="button"
             onClick={() => navigate("/collection")}
             className="bg-blue-500 text-white"
           >
-            Discard
+            Quay về
           </Button>
         </div>
       </form>

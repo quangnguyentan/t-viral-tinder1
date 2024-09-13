@@ -24,10 +24,15 @@ const WithDraw = () => {
       draw: values?.money,
     });
     if (data.success) {
-      toast.success(`Bạn đã rút ${values?.money} đồng thành công`);
+      toast.success(
+        `Bạn đã rút ${values?.money}! Vui lòng đợi quản trị viên kiểm duyệt`
+      );
     } else {
       toast.error(`${data?.message}`);
     }
+    setTimeout(() => {
+      location.reload();
+    }, 3000);
   };
 
   useEffect(() => {

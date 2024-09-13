@@ -5,7 +5,7 @@ const {
 } = require("../controllers/withDrawAndDepositController");
 const { verifyToken, isAdmin } = require("../middlewares/verifyToken");
 const router = require("express").Router();
-router.get("/deposit", getAllDeposit);
+router.get("/deposit", [verifyToken], getAllDeposit);
 router.get("/withdraw", [verifyToken], getAllWithDraw);
 router.get("/withdraw/:id", [verifyToken], getWithDrawById);
 

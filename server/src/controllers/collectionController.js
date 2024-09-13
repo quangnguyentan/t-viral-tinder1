@@ -91,14 +91,20 @@ const updateCollection = async (req, res) => {
 const deleteCollection = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await Collection.findByIdAndDelete(id);
+    if (!id) throw new Error("Invalid");
+    const movie = await collection?.findByIdAndDelete(id);
+    console.log(movie);
     return res.status(200).json({
-      success: data ? true : false,
+      success: movie ? true : false,
+      movie,
     });
   } catch (error) {
-    console.log(error.message);
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
+
 module.exports = {
   getAllCollection,
   createCollection,

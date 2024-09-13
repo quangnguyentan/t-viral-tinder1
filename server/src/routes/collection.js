@@ -22,7 +22,7 @@ const upload = multer({ storage });
 router.get("/", getAllCollection);
 router.get("/:id", getCollectionById);
 router.get("/different/:id", getCollectionDifference);
-router.delete("/:id", [verifyToken, isAdmin], deleteCollection);
+router.delete("/delete/:id", [verifyToken, isAdmin], deleteCollection);
 router.put("/update/:id/:userId", [verifyToken], updateCollection);
 router.post(
   "/create",

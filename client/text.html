@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="countdown"></div>
+  <script src="https://momentjs.com/downloads/moment.js"></script>
+  <script>
+    moment().startOf('hour').fromNow();
+    const countdownElement = document.getElementById('countdown');
+
+    // Lấy thời gian kết thúc từ Local Storage hoặc đặt mặc định nếu chưa có
+    let endTime = localStorage.getItem('endTime');
+    if (!endTime) {
+      endTime = new Date().getTime() + 3 * 60 * 1000; // 3 phút từ bây giờ
+      localStorage.setItem('endTime', endTime);
+    }
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = endTime - now;
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      countdownElement.innerHTML
+        = minutes + 'm ' + seconds + 's ';
+
+      if (distance < 0) {
+        clearInterval(intervalId);
+        countdownElement.innerHTML = 'Đã hết giờ!';
+      }
+    }
+
+    // Cập nhật đếm ngược mỗi giây
+    const intervalId = setInterval(updateCountdown, 1000);
+
+    // Gọi hàm updateCountdown lần đầu tiên để hiển thị ngay lập tức
+    updateCountdown();
+  </script>
+</body>
+
+</html>

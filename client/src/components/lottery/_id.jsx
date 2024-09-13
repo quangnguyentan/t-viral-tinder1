@@ -3,16 +3,18 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "@/components/custom ui/Loader";
 import LotteryForm from "@/components/lottery/LotteryForm";
-import { apiGetCollectionById } from "@/services/collectionService";
+import { apiGetLotteryById, apiGetRoomById } from "@/services/evaluateService";
 import { useParams } from "react-router-dom";
+
 const LotteryDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [collectionDetails, setCollectionDetails] = useState(null);
-  const { id } = useParams();
-  const getCollectionDetails = async (id) => {
+  const [lotteryDetails, setLotteryDetails] = useState(null);
+
+  const { roomId } = useParams();
+  const getCollectionDetails = async (roomId) => {
     try {
-      const data = await apiGetCollectionById(id);
-      setCollectionDetails(data.collections);
+      const data = await apiGetRoomById(roomId);
+      if (data?.success) setLotteryDetails(data.evaluates);
       setIsLoading(false);
     } catch (error) {
       console.log("collection_[GET]", error);
@@ -20,13 +22,9 @@ const LotteryDetails = () => {
     }
   };
   useEffect(() => {
-    getCollectionDetails(id);
-  }, []);
-  return isLoading ? (
-    <Loader />
-  ) : (
-    <LotteryForm initialData={collectionDetails} />
-  );
+    getCollectionDetails(roomId);
+  }, [roomId]);
+  return isLoading ? <Loader /> : <LotteryForm initialData={lotteryDetails} />;
 };
 
 export default LotteryDetails;

@@ -21,7 +21,20 @@ export const navLinks = [
   },
 
   {
+    url: "/evaluatehistory",
+    label: "Lịch sử đánh giá",
+  },
+
+  {
+    url: "/withdrawalhistory",
+    label: "Lịch sử rút tiền",
+  },
+  {
+    url: "/withdtransformhistory",
+    label: "Rút tiền",
+  },
+  {
     url: "/customers",
-    label: "Quản lí người dùng",
+    label: "Quản lí người dùng và nạp tiền",
   },
 ];

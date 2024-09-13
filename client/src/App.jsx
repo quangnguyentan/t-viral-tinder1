@@ -17,6 +17,7 @@ import Information from "./pages/Infomation";
 import UpdateName from "./pages/UpdateName";
 import UpdateBank from "./pages/UpdatBank";
 import UpdateGender from "./pages/UpdateGender";
+import UpdatePassword from "./pages/UpdatePassword";
 
 import Setting from "./pages/Setting";
 import LotteryForm from "./components/lottery/LotteryForm";
@@ -33,6 +34,13 @@ import WithDraw from "./pages/WithDraw";
 import DepositialHistory from "./pages/DepositalHistory";
 import WithDrawalHistory from "./pages/WithDrawalHistory";
 import AdminDashBoard from "./pages/Admin/Home";
+import LotteryDetails from "./components/lottery/_id";
+import EvaluteHistory from "./pages/EvaluteHistory";
+import HistoryDetails from "./pages/EvaluteHistory/_id";
+import WithDrawalHistoryAdmin from "./pages/WithDrawalHistoryAdmin";
+import TransformHistory from "./pages/Transform";
+import HistoryDetailsAdmin from "./pages/Admin/EvaluteHistory/_id";
+import EvaluteHistoryAdmin from "./pages/Admin/EvaluteHistory";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -65,6 +73,7 @@ function App() {
                   element={<AdminDashBoard />}
                   path={path.ADMINDASHBOARD}
                 />
+
                 <Route element={<Collections />} path={path.COLLECTION} />
                 <Route
                   element={<CollectionForm />}
@@ -78,6 +87,28 @@ function App() {
                 <Route element={<CustomerForm />} path={path.CREATE_CUSTOMER} />
                 <Route element={<UserDetails />} path={path.CUSTOMER_DETAIL} />
                 <Route element={<LotteryForm />} path={path.CREATE_LOTTERY} />
+
+                <Route
+                  element={<EvaluteHistoryAdmin />}
+                  path={path.HISTORYEVALUTEADMIN}
+                />
+                <Route
+                  element={<HistoryDetailsAdmin />}
+                  path={path.HISTORYDETAILSEVALUTEADMIN}
+                />
+                <Route
+                  element={<WithDrawalHistoryAdmin />}
+                  path={path.HISTORYWITHDRAWADMIN}
+                />
+                <Route
+                  element={<TransformHistory />}
+                  path={path.HISTORYTRANSFORMADMIN}
+                />
+                <Route
+                  element={<LotteryDetails />}
+                  path={path.LOTTERY_DETAIL}
+                />
+
                 <Route element={<Lottery />} path={path.LOTTERY} />
               </Route>
             )}
@@ -95,10 +126,22 @@ function App() {
                   element={<WithDrawalHistory />}
                   path={path.HISTORYWITHDRAW}
                 />
-
+                <Route
+                  element={<EvaluteHistory />}
+                  path={path.HISTORYEVALUTE}
+                />
+                <Route
+                  element={<HistoryDetails />}
+                  path={path.HISTORYDETAILSEVALUTE}
+                />
                 <Route element={<UpdateName />} path={path.NAME} />
                 <Route element={<UpdateBank />} path={path.BANK} />
                 <Route element={<UpdateGender />} path={path.GENDER} />
+                <Route
+                  element={<UpdatePassword />}
+                  path={path.CHANGEPASSWORD}
+                />
+
                 <Route element={<Setting />} path={path.SETTING} />
                 <Route element={<DetailCinema />} path={path.CINEMA_DETAIL} />
                 {/* <Route element={<UserForm />} path={path.EDIT_USER} /> */}

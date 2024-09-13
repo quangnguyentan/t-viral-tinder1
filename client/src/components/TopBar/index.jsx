@@ -22,6 +22,7 @@ const TopBar = () => {
           </Link>
         ))}
       </div>
+
       <div className="relative flex gap-4 text-body-medium items-center">
         <Menu
           className="cursor-pointer md:hidden"

@@ -1,11 +1,18 @@
 import { logout } from "@/stores/actions/authAction";
+import { getCurrent } from "@/stores/actions/userAction";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const Setting = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { currentData } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    dispatch(getCurrent());
+  }, []);
   return (
     <div className="h-screen">
       <div className="relative w-full mx-auto">
@@ -35,19 +42,22 @@ const Setting = () => {
             </div>
           </div>
           <div className="w-[90%] mx-auto h-[0.5px] bg-[#ebedf0]"></div>
-          <div className="flex justify-between px-4 py-2">
+          <div
+            className="flex justify-between px-4 py-2"
+            onClick={() => navigate(`/setPassword/${currentData?._id}`)}
+          >
             <span>Đổi mật khẩu</span>
             <div className="flex items-center gap-2 ">
               <ChevronRight />
             </div>
           </div>
           <div className="w-[90%] mx-auto h-[0.5px] bg-[#ebedf0]"></div>
-          <div className="flex justify-between px-4 py-2">
+          {/* <div className="flex justify-between px-4 py-2">
             <span>Ngôn ngữ</span>
             <div className="flex items-center gap-2 ">
               <ChevronRight />
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="px-4 py-12">
           <button

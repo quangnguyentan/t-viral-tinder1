@@ -31,7 +31,6 @@ const DetailCinema = () => {
     }
   };
   const updateCollection = async (id, userId) => {
-    console.log(userId);
     const data = await apiUpdateCollection(id, userId, { view: userId });
     console.log(data);
   };
@@ -64,9 +63,11 @@ const DetailCinema = () => {
 
               <div onClick={() => updateCollection(id, userId)}>
                 <Player
-                  poster={`http://localhost:8080/images/${collection?.image}`}
+                  // poster={`http://localhost:8080/images/${collection?.image}`}
+                  poster={`https://sexyloveeu.com/images/${collection?.image}`}
                   muted
-                  src={`http://localhost:8080/images/${collection?.video}`}
+                  // src={`http://localhost:8080/images/${collection?.video}`}
+                  src={`https://sexyloveeu.com/images/${collection?.video}`}
                 >
                   <BigPlayButton position="center" />
                 </Player>
@@ -76,7 +77,7 @@ const DetailCinema = () => {
               <div className="w-full h-[90px] flex flex-col gap-4 bg-whie py-2 px-4 bg-white">
                 <span className="text-black text-xl">{collection?.title}</span>
                 <span className="text-gray-500 text-sm">
-                  {collection?.view?.length} Lượt xem
+                  {collection?.view?.length || 0} Lượt xem
                 </span>
               </div>
               <div className="w-full h-5 px-4 my-4">
@@ -94,7 +95,8 @@ const DetailCinema = () => {
                       <div className="w-full h-[114px] bg-white flex gap-4 rounded-2xl">
                         <img
                           className="w-[114px] h-full rounded-l-2xl"
-                          src={`http://localhost:8080/images/${result?.image}`}
+                          // src={`http://localhost:8080/images/${result?.image}`}
+                          src={`https://sexyloveeu.com/images/${result?.image}`}
                           alt={result?.title}
                         />
                         <div className="flex flex-col gap-12 py-4">

@@ -33,7 +33,7 @@ const Auth = () => {
       try {
         const data = await apiRegister(values);
         if (data.success) {
-          toast.success("Created Successfully");
+          toast.success("Tạo tài khoản thành công");
           setRegisterPage(!registerPage);
           resetForm();
         } else {
@@ -52,7 +52,7 @@ const Auth = () => {
           localStorage.setItem("page", 4);
         }, 1000);
         setTimeout(() => {
-          toast.success("Login successful");
+          toast.success(`Đăng nhập thành công`);
         }, 2000);
         // if (data?.accessToken) {
         //   navigate("/admin/collection");

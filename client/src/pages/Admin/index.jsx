@@ -1,15 +1,13 @@
 import LeftSideBar from "@/components/LeftSideBar";
-import TopBar from "@/components/TopBar";
 import { Outlet } from "react-router-dom";
 
 const Public = () => {
   return (
-    <div className="flex ">
-      <div className="w-1/5">
+    <div className="flex">
+      <div className="w-1/3 overflow-y-auto h-screen scroll-smooth ">
         <LeftSideBar />
-        <TopBar />
       </div>
-      <div className="w-4/5">
+      <div className="w-2/3 overflow-y-auto h-screen scroll-smooth ">
         <Outlet />
       </div>
     </div>

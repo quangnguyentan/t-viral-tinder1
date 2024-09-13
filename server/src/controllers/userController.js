@@ -42,20 +42,73 @@ const getAllUsers = async (req, res) => {
     });
   }
 };
+const getGetUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await users.findById(id);
+    return res.status(200).json({
+      success: user ? true : false,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const getDeleteUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) throw new Error("Invalid");
+    const user = await users.findByIdAndDelete(id);
+    console.log(user);
+    return res.status(200).json({
+      success: user ? true : false,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 const updatedUser = async (req, res) => {
   try {
     let user;
     const { id } = req.params;
-    const { username, gender, nameOfBank, nameOfUser, creditCartOfBank } =
-      req.body;
+    const {
+      fullName,
+      username,
+      gender,
+      nameOfBank,
+      nameOfUser,
+      creditCartOfBank,
+    } = req.body;
     const findBankAlready = await users.findOne({ creditCartOfBank });
-    if (!findBankAlready) {
+
+    if (findBankAlready) {
       user = await users.findByIdAndUpdate(
         id,
-        { username, gender, nameOfBank, nameOfUser, creditCartOfBank },
+        {
+          fullName,
+          username,
+          gender,
+        },
         { new: true }
       );
-      user.save();
+    } else {
+      user = await users.findByIdAndUpdate(
+        id,
+        {
+          fullName,
+          username,
+          gender,
+          nameOfBank,
+          nameOfUser,
+          creditCartOfBank,
+        },
+        { new: true }
+      );
     }
 
     return res.status(200).json({
@@ -68,22 +121,45 @@ const updatedUser = async (req, res) => {
     });
   }
 };
+const DepositUser = async (req, res) => {
+  try {
+    let data;
+    const { id } = req.params;
+    const { desposit, vip } = req.body;
+    if (!desposit) throw new Error("Vui lòng nhập số tiền");
+    const user = await users.findById(id);
+    if (user) {
+      data = await users.findByIdAndUpdate(id, {
+        withDraw: user?.withDraw + Number(desposit),
+        vip: vip,
+      });
+    }
+    return res.status(200).json({
+      success: data ? true : false,
+      data,
+      message: data
+        ? "Đã nộp tiền thành công"
+        : "Nộp tiền thất bại! Vui lòng thử lại",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 const withDrawAndDepositUser = async (req, res) => {
   try {
     let data;
     const { currentUser } = req;
     const { id } = req.params;
-    const { draw, desposit } = req.body;
+    const { draw } = req.body;
+
+    const user = await users.findById(id);
+
     if (!draw) {
       throw new Error("Vui lòng nhập số tiền");
     }
-    const user = await users.findById(id);
-    if (desposit && currentUser?.role === "admin") {
-      data = await users.findByIdAndUpdate(id, {
-        desposit: user?.deposit + desposit,
-      });
-      data.save();
-    }
+
     if (user?.withDraw >= Number(draw)) {
       data = await users.findByIdAndUpdate(id, {
         // withDraw: user?.withDraw - Number(draw),
@@ -132,33 +208,48 @@ const withDrawAndDepositUser = async (req, res) => {
 const updatedStatusWithDraw = async (req, res) => {
   try {
     const { WithDrawId, userId } = req.params;
-    const { status } = req.body;
+    const { status, reson } = req.body;
     let updateBill;
-    const findWithDraw = await withDraw.findById(userId);
-
+    let findWithDraw = await withDraw.findById(WithDrawId);
+    let user = await users.findById(userId);
+    console.log(status);
     if (findWithDraw && status === "Thành công") {
-      updateBill = await users.findByIdAndUpdate(id, {
-        withDraw: user?.withDraw - findWithDraw.withDraw,
-      });
-      data.save();
+      updateBill = await users.findByIdAndUpdate(
+        userId,
+        {
+          withDraw: user?.withDraw - findWithDraw.withDraw,
+        },
+        { new: true }
+      );
+      console.log(updateBill);
       if (updateBill) {
-        let findBill = await withDraw.findByIdAndUpdate(WithDrawId, {
-          status: status,
-        });
+        let findBill = await withDraw.findByIdAndUpdate(
+          WithDrawId,
+          {
+            status: status,
+            reson: reson,
+          },
+          { new: true }
+        );
         findBill.save();
       }
-    } else {
-      updateBill = await users.findByIdAndUpdate(id, {
-        withDraw: user?.withDraw,
-        status: status,
-      });
+    }
+    if (findWithDraw && status === "Không thành công") {
+      updateBill = await withDraw.findByIdAndUpdate(
+        WithDrawId,
+        {
+          status: status,
+          reson: reson,
+        },
+        { new: true }
+      );
     }
     return res.status(200).json({
       success:
         status === "Thành công"
           ? true
           : updateBill.status === "Không thành công" && false,
-      data,
+      updateBill,
     });
   } catch (error) {
     res.status(500).json({
@@ -173,4 +264,7 @@ module.exports = {
   updatedUser,
   withDrawAndDepositUser,
   updatedStatusWithDraw,
+  getDeleteUserById,
+  getGetUserById,
+  DepositUser,
 };

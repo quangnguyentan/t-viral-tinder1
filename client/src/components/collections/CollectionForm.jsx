@@ -144,14 +144,14 @@ const CollectionForm = ({ initialData }) => {
 
         <div className="flex gap-10">
           <Button type="submit" className="bg-blue-500 text-white">
-            Submit
+            Gửi
           </Button>
           <Button
             type="button"
             onClick={() => navigate("/collection")}
             className="bg-blue-500 text-white"
           >
-            Discard
+            Quay về
           </Button>
         </div>
       </form>

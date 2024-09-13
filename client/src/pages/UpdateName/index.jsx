@@ -27,7 +27,6 @@ const updateName = () => {
       e.preventDefault();
     }
   };
-  console.log(watch("name"));
   const onSubmit = async (values) => {
     try {
       setIsLoadding(true);
@@ -35,16 +34,15 @@ const updateName = () => {
       //   ? `/api/collections/${initialData?._id}`
       //   : "/api/collections/new";
 
-      const res = await apiUpdatedUser({
-        id: currentData?._id,
-        username: values.name,
+      const res = await apiUpdatedUser(currentData?._id, {
+        fullName: values?.name,
       });
       console.log(res);
       if (res.success) {
         setIsLoadding(false);
         // toast.success(`Collection ${initialData ? "updated" : "created"} `);
         // window.location.href = "/collections";
-        navigate("/collection");
+        navigate("/information");
       }
     } catch (error) {
       console.log("[collections_POST]", error);
@@ -54,6 +52,9 @@ const updateName = () => {
   useEffect(() => {
     dispatch(getCurrent());
   }, []);
+
+  // Ví dụ sử dụng:
+
   return (
     <>
       <div className="h-screen">
@@ -69,7 +70,7 @@ const updateName = () => {
                   size={30}
                 />
                 <span className=" text-xl text-white absolute top-2 left-[40%]">
-                  Thông tin cá nhân
+                  Sửa đổi tên
                 </span>
                 <Button
                   type="submit"
@@ -81,13 +82,10 @@ const updateName = () => {
             </div>
             <div className="flex flex-col gap-4">
               <div className="w-[90%] mx-auto h-[0.5px] bg-[#ebedf0]"></div>
-              <div
-                className="flex items-center gap-8 px-4 py-2"
-                onClick={() => navigate("/setName")}
-              >
+              <div className="flex items-center gap-8 px-4 py-2">
                 <span>Họ tên thật</span>
                 <div className="">
-                  <Input
+                  <input
                     {...register("name")}
                     placeholder="Họ và tên"
                     onKeyDown={handleKeyPress}
@@ -95,6 +93,13 @@ const updateName = () => {
                   />
                 </div>
               </div>
+              <div className="flex items-center gap-8 px-4 py-2">
+                <span className="text-red-500">
+                  Để đảm bảo an toàn cho tài khoản của bạn, họ tên thật cần phải
+                  giống với tên trên thẻ ngân hàng.
+                </span>
+              </div>
+
               <div className="w-[90%] mx-auto h-[0.5px] bg-[#ebedf0]"></div>
             </div>
           </div>

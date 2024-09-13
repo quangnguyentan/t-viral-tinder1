@@ -3,19 +3,23 @@ const evaluateSchema = new mongoose.Schema(
   {
     period: {
       type: Number,
-      default: 180,
     },
     periodNumber: {
       type: Array,
     },
 
     result: Array,
+
+    resultUpdate: Array,
     room: String,
+    image: String,
+
     users: [
       {
         UserId: String,
         result: Array,
         periodNumber: Number,
+        resultValue: Array,
         createdAt: {
           type: Date,
           default: Date.now,

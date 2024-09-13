@@ -33,7 +33,7 @@ const Profile = () => {
     }, 2000);
   };
   return (
-    <div className="relative">
+    <div className="relative overflow-y-scroll pb-12">
       <div className="relative w-[100%] h-[200px]">
         <div className="bg-profileColor w-full h-full">
           <div className="w-full flex justify-end p-4">
@@ -70,7 +70,11 @@ const Profile = () => {
                 }}
               />
               <h3 className="text-lg text-white">
-                {currentData ? currentData?.username : "anonymous"}
+                {currentData
+                  ? currentData?.fullName
+                    ? currentData?.fullName
+                    : currentData?.username
+                  : "anonymous"}
               </h3>
             </Link>
             <img src={level_vip} className="w-12 h-10" alt="vip" />
@@ -212,7 +216,10 @@ const Profile = () => {
             </div>
             <span className="text-base text-[#c24491]">Lịch sử nạp tiền</span>
           </div>
-          <div className="flex items-center px-4 py-4 gap-4">
+          <div
+            className="flex items-center px-4 py-4 gap-4"
+            onClick={() => navigate(`/evaluatehistory/${currentData?._id}`)}
+          >
             <div className="w-[50px] h-[50px] flex items-center justify-center border rounded-full">
               <SportsEsportsIcon
                 sx={{

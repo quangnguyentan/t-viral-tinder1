@@ -12,6 +12,18 @@ export const apiGetCollection = () =>
       console.log("Failed to get product", error);
     }
   });
+export const apiDeleteCollectionById = (id) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: "DELETE",
+        url: "/collections/delete/" + id,
+      });
+      resolve(response);
+    } catch (error) {
+      console.log("Failed to delete product", error);
+    }
+  });
 export const apiGetCollectionById = (id) =>
   new Promise(async (resolve, reject) => {
     try {
