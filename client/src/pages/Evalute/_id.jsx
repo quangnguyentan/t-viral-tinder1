@@ -1,23 +1,19 @@
 import { ChevronDown, ChevronLeft, ShoppingCart } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import danhgia1 from "@/assets/danhgia1.jpg";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   apiGetCountDown,
   apiGetLotteryById,
   apiUpdateLottery,
+  apiupdateTimer,
   apiUpdateUserIntoRoom,
 } from "@/services/evaluateService";
-import { CountDown } from "@/components/custom ui/countDown";
-import io from "socket.io-client";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrent } from "@/stores/actions/userAction";
 import { useForm } from "react-hook-form";
 import { Skeleton } from "@/components/ui/skeleton";
-var connectOptions = {
-  transports: ["websocket"],
-};
+import { getLottery } from "@/stores/actions/lotteryAction";
 
 const result = [
   {
@@ -96,10 +92,7 @@ const DetailEvalute = () => {
     newSelected.sort();
     setSelectedItems(newSelected);
   };
-  const apiGetDetailsLottery = async (roomId, userId) => {
-    const data = await apiGetLotteryById(roomId, userId);
-    if (data?.success) setLottery(data?.evaluates);
-  };
+
   const apiUpdateEvaluate = async (values) => {
     const data = await apiUpdateLottery(roomId, userId, {
       money: values?.money,
@@ -112,9 +105,29 @@ const DetailEvalute = () => {
       toast.error(data?.message);
     }
   };
+  // const apiGetApiUpdateTimer = async () => {
+  //   let endTime = new Date().getTime() + Number(time) * 60 * 1000;
+  //   await apiupdateTimer({ timer: endTime });
+  //   // if (data?.success) {
+  //   //   toast.success(data?.message);
+  //   // } else {
+  //   //   toast.error(data?.message);
+  //   // }
+
+  // };
+  const apiGetDetailsLottery = async (roomId, userId) => {
+    const data = await apiGetLotteryById(roomId, userId);
+    if (data?.success) {
+      setLottery(data?.evaluates);
+    }
+  };
+  // getApiUpdateTimer();
   useEffect(() => {
     apiGetDetailsLottery(roomId, userId);
   }, [roomId, userId]);
+  // const getApiUpdateTimer = async () => {
+  //   await apiupdateTimer();
+  // };
   const apiUpdateUserRoom = async (roomId, userId) => {
     // const data = await apiUpdateUserIntoRoom(roomId, userId, {
     //   money: money || Number(moneyInput),
@@ -127,6 +140,7 @@ const DetailEvalute = () => {
     //   toast.error(data?.message);
     // }
   };
+
   const apiUpdatedCountDown = async () => {
     const data = await apiGetCountDown();
     console.log(data);
@@ -137,28 +151,6 @@ const DetailEvalute = () => {
     //   toast.error(data?.message);
     // }
   };
-
-  // const socket = io.connect("http://localhost:8080", connectOptions);
-  // useEffect(() => {
-  //   socket.on("receive_time", async (data) => {
-  //     const inner = document.getElementById("timer");
-
-  //     if (inner) {
-  //       // Clear all existing child elements
-  //       inner.innerHTML = "";
-  //       const timeElement = document.createElement("div");
-  //       timeElement.textContent = `${data.hours} : ${data.minutes} : ${data.remainingSeconds}`;
-  //       inner.appendChild(timeElement);
-  //     }
-  //     if (
-  //       data.hours === 0 &&
-  //       data.minutes === 0 &&
-  //       data.remainingSeconds <= 1
-  //     ) {
-  //       await apiUpdateUserRoom();
-  //     }
-  //   });
-  // }, [socket]);
   useEffect(() => {
     const countdownElement = document.getElementById("countdown");
 
@@ -187,6 +179,7 @@ const DetailEvalute = () => {
         clearInterval(intervalId);
         apiUpdatedCountDown();
         setTimeout(() => {
+          localStorage.removeItem("endTime");
           apiUpdateUserRoom(roomId, userId);
           window.location.reload();
           endTime = new Date().getTime() + Number(time) * 60 * 1000; // 3 phút từ bây giờ
@@ -201,6 +194,79 @@ const DetailEvalute = () => {
 
     return () => clearInterval(intervalId);
   }, []);
+  // useEffect(() => {
+  //   const countdownElement = document.getElementById("countdown");
+  //   async function updateCountdown() {
+  //     const apiGetDetailsLottery = async (roomId, userId) => {
+  //       const data = await apiGetLotteryById(roomId, userId);
+  //       if (data?.success) {
+  //         setLottery(data?.evaluates);
+  //         setEndTime(data?.evaluates?.timer);
+  //       }
+  //     };
+  //     getApiUpdateTimer();
+  //     apiGetDetailsLottery(roomId, userId);
+  //     const hours = Math.floor(endTime / (1000 * 60 * 60))
+  //       .toString()
+  //       .padStart(2, "0");
+  //     const minutes = Math.floor((endTime % (1000 * 60 * 60)) / (1000 * 60))
+  //       .toString()
+  //       .padStart(2, "0");
+  //     const seconds = Math.floor((endTime % (1000 * 60)) / 1000)
+  //       .toString()
+  //       .padStart(2, "0");
+  //     countdownElement.textContent = hours + " : " + minutes + " : " + seconds;
+  //     console.log(endTime);
+  //     // if (endTime <= 1000) {
+  //     //   // getApiUpdateTimer();
+  //     //   apiUpdatedCountDown();
+  //     //   setTimeout(() => {
+  //     //     apiUpdateUserRoom(roomId, userId);
+  //     //   }, 1000);
+  //     //   setEndTime(null); // Clear local state
+  //     // }
+  //   }
+  //   let intervalId = setInterval(updateCountdown, 1000);
+  //   updateCountdown();
+
+  //   return () => clearInterval(intervalId);
+  // }, [endTime]);
+
+  // useEffect(() => {
+  //   const countdownElement = document.getElementById("countdown");
+
+  //   // Lấy thời gian kết thúc từ Local Storage hoặc đặt mặc định nếu chưa có
+  //   async function updateCountdown() {
+  //     const hours = Math.floor(lottery?.timer / (1000 * 60 * 60))
+  //       .toString()
+  //       .padStart(2, "0");
+  //     const minutes = Math.floor(
+  //       (lottery?.timer % (1000 * 60 * 60)) / (1000 * 60)
+  //     )
+  //       .toString()
+  //       .padStart(2, "0");
+  //     const seconds = Math.floor((lottery?.timer % (1000 * 60)) / 1000)
+  //       .toString()
+  //       .padStart(2, "0");
+
+  //     countdownElement.textContent = hours + " : " + minutes + " : " + seconds;
+  //     // if (lottery?.timer <= 0) {
+  //     //   localStorage.removeItem("endTime");
+  //     //   clearInterval(intervalId);
+  //     //   apiUpdatedCountDown();
+  //     //   setTimeout(() => {
+  //     //     apiUpdateUserRoom(roomId, userId);
+  //     //     location.reload();
+  //     //   }, 1000);
+  //     // }
+  //   }
+
+  //   // Cập nhật đếm ngược mỗi giây
+  //   let intervalId = setInterval(updateCountdown, 1000);
+  //   updateCountdown();
+
+  //   return () => clearInterval(intervalId);
+  // }, [endTime]);
   return (
     <div className="md:w-[50%] sm:w-full mx-auto bg-gray-100 h-screen relative">
       <div className="sticky w-full top-0">
@@ -226,7 +292,7 @@ const DetailEvalute = () => {
             <div className="w-[60px] h-[60px]">
               {lottery?.image ? (
                 <img
-                  src={`https://sexyloveeu.com/images/${lottery?.image}`}
+                  src={`https://sv.sexyloveeu.com/images/${lottery?.image}`}
                   alt=""
                   className="w-full h-full"
                 />
@@ -363,7 +429,7 @@ const DetailEvalute = () => {
         <div className="w-full h-[70px] bg-white absolute bottom-0">
           <div className="flex items-center py-2 justify-between px-4 relative ">
             {selectedItems?.length > 0 && hoverActive && (
-              <div className="absolute bottom-[90px] w-full h-[120px] bg-white border-b-2 left-0">
+              <div className="absolute bottom-[70px] w-full h-fit bg-white border-b-2 left-0">
                 <div className="flex items-center justify-between px-4 py-2">
                   <div className="flex gap-4 items-center">
                     <span>Lựa chọn của bạn</span>

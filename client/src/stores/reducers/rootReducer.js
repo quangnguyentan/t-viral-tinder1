@@ -4,8 +4,7 @@ import storage from "redux-persist/lib/storage";
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import { persistReducer } from "redux-persist";
 import userReducer from "./userReducer";
-import timerReducer from "./timeReducer";
-import countdownReducer from "./timeReducer";
+import lotteryReducer from "./lotteryReducer";
 
 const commonConfig = {
   storage,
@@ -19,6 +18,6 @@ const authConfig = {
 const rootReducer = combineReducers({
   auth: persistReducer(authConfig, authReducer),
   user: userReducer,
-  time: countdownReducer,
+  lottery: lotteryReducer,
 });
 export default rootReducer;

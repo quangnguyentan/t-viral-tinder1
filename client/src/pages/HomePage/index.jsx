@@ -194,7 +194,7 @@ const HomePage = ({ currentData }) => {
             /> */}
               <img
                 className="w-[186px] h-[158px] rounded-xl bg-gray-100 "
-                src={`https://sexyloveeu.com/images/${col?.image}`}
+                src={`https://sv.sexyloveeu.com/images/${col?.image}`}
                 alt=""
               />
               <div className="absolute bottom-0  w-full">

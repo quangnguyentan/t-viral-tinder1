@@ -1,8 +1,50 @@
 const evaluate = require("../models/evaluate");
 const users = require("../models/users");
 const getRandomTwo = require("../utils/randomLottery");
-
+var LocalStorage = require("node-localstorage").LocalStorage,
+  localStorage = new LocalStorage("./scratch");
 let array = ["A", "B", "C", "D"];
+const updateTimer = async (req, res) => {
+  try {
+    let findRoom;
+    findRoom = await evaluate.find();
+    if (findRoom?.length === 0) throw new Error("Hiện tại chưa có phòng nào");
+
+    let endTime = localStorage.getItem("endTime");
+    if (!endTime) {
+      endTime = new Date().getTime() + 3 * 60 * 1000;
+      localStorage.setItem("endTime", endTime);
+    }
+
+    async function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = endTime - now;
+      findRoom.map(async (find) => {
+        await evaluate.findOneAndUpdate(
+          { room: find?.room },
+          {
+            timer: distance,
+          },
+          { new: true }
+        );
+      });
+
+      if (findRoom[0].timer <= 0) {
+        console.log("reset");
+        localStorage.removeItem("endTime");
+        clearInterval(intervalId);
+        endTime = new Date().getTime() + 3 * 60 * 1000;
+        localStorage.setItem("endTime", endTime);
+      }
+    }
+    let intervalId = setInterval(updateCountdown, 1000);
+    // Cập nhật đếm ngược mỗi giây
+    updateCountdown();
+    return () => clearInterval(intervalId);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+};
 const countdown = async (req, res) => {
   try {
     let findRoom;
@@ -417,4 +459,5 @@ module.exports = {
   updateLotteryResult,
   countdown,
   deleteLotteryById,
+  updateTimer,
 };

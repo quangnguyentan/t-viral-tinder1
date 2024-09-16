@@ -30,7 +30,7 @@ export default function CustomSlide({ collection, currentData }) {
             >
               <div className="w-[90%] h-[152px] object-cover">
                 <img
-                  src={` https://sexyloveeu.com//images/${col?.image}`}
+                  src={`https://sv.sexyloveeu.com/images/${col?.image}`}
                   // src={
                   //   `http://localhost:8080/images/${col?.image}`
                   //     ? `http://localhost:8080/images/${col?.image}`

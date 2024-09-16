@@ -54,7 +54,7 @@ const Cinema = ({ currentData }) => {
                     >
                       <img
                         // src={`http://localhost:8080/images/${collection.image}`}
-                        src={`https://sexyloveeu.com/images/${collection?.image}`}
+                        src={`https://sv.sexyloveeu.com/images/${collection?.image}`}
                         className="w-full h-full rounded-xl"
                         alt=""
                       />
@@ -83,7 +83,7 @@ const Cinema = ({ currentData }) => {
                     >
                       <img
                         // src={`http://localhost:8080/images/${collection.image}`}
-                        src={`https://sexyloveeu.com/images/${collection?.image}`}
+                        src={`https://sv.sexyloveeu.com/images/${collection?.image}`}
                         className="w-full h-full rounded-xl"
                         alt=""
                       />
@@ -112,7 +112,7 @@ const Cinema = ({ currentData }) => {
                     >
                       <img
                         // src={`http://localhost:8080/images/${collection.image}`}
-                        src={`https://sexyloveeu.com/images/${collection?.image}`}
+                        src={`https://sv.sexyloveeu.com/images/${collection?.image}`}
                         className="w-full h-full rounded-xl"
                         alt=""
                       />
@@ -141,7 +141,7 @@ const Cinema = ({ currentData }) => {
                     >
                       <img
                         // src={`http://localhost:8080/images/${collection.image}`}
-                        src={`https://sexyloveeu.com/images/${collection?.image}`}
+                        src={`https://sv.sexyloveeu.com/images/${collection?.image}`}
                         className="w-full h-full rounded-xl"
                         alt=""
                       />
@@ -171,7 +171,7 @@ const Cinema = ({ currentData }) => {
                     >
                       <img
                         // src={`http://localhost:8080/images/${collection.image}`}
-                        src={`https://sexyloveeu.com/images/${collection?.image}`}
+                        src={`https://sv.sexyloveeu.com/images/${collection?.image}`}
                         className="w-full h-full rounded-xl"
                         alt=""
                       />

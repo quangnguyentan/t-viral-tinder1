@@ -11,6 +11,19 @@ export const apiGetLotteryById = (id, userId) =>
       reject(error);
     }
   });
+export const apiupdateTimer = (data) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await axiosConfig({
+        method: "GET",
+        url: `/evaluate/lottery/updateTime`,
+        data,
+      });
+      resolve(response);
+    } catch (error) {
+      reject(error);
+    }
+  });
 export const apiGetLotteryHistory = (roomId, userId) =>
   new Promise(async (resolve, reject) => {
     try {

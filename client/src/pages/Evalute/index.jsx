@@ -107,7 +107,7 @@ const Evalute = ({ currentData }) => {
                 <div className="w-[100%] bg-white cursor-pointer  rounded-2xl h-[140px] flex flex-col items-center ">
                   <img
                     className="w-full h-[70%] object-contain rounded-2xl px-4 py-2  "
-                    src={`https://sexyloveeu.com/images/${lot?.image}`}
+                    src={`https://sv.sexyloveeu.com/images/${lot?.image}`}
                     alt="evalute"
                   />
                   <span className="">Đánh giá {index + 1} </span>

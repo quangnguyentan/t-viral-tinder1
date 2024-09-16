@@ -64,10 +64,10 @@ const DetailCinema = () => {
               <div onClick={() => updateCollection(id, userId)}>
                 <Player
                   // poster={`http://localhost:8080/images/${collection?.image}`}
-                  poster={`https://sexyloveeu.com/images/${collection?.image}`}
+                  poster={`https://sv.sexyloveeu.com/images/${collection?.image}`}
                   muted
                   // src={`http://localhost:8080/images/${collection?.video}`}
-                  src={`https://sexyloveeu.com/images/${collection?.video}`}
+                  src={`https://sv.sexyloveeu.com/images/${collection?.video}`}
                 >
                   <BigPlayButton position="center" />
                 </Player>
@@ -96,7 +96,7 @@ const DetailCinema = () => {
                         <img
                           className="w-[114px] h-full rounded-l-2xl"
                           // src={`http://localhost:8080/images/${result?.image}`}
-                          src={`https://sexyloveeu.com/images/${result?.image}`}
+                          src={`https://sv.sexyloveeu.com/images/${result?.image}`}
                           alt={result?.title}
                         />
                         <div className="flex flex-col gap-12 py-4">
