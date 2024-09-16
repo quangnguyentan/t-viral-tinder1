@@ -1,6 +1,8 @@
 import { ChevronDown, ChevronLeft, ShoppingCart } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { openDB } from "idb";
+
 import {
   apiGetCountDown,
   apiGetLotteryById,
@@ -115,19 +117,22 @@ const DetailEvalute = () => {
   //   // }
 
   // };
+  const [timer, setTimer] = useState(null);
   const apiGetDetailsLottery = async (roomId, userId) => {
     const data = await apiGetLotteryById(roomId, userId);
     if (data?.success) {
       setLottery(data?.evaluates);
+      setTimer(data?.evaluates?.timer);
     }
   };
   // getApiUpdateTimer();
   useEffect(() => {
     apiGetDetailsLottery(roomId, userId);
   }, [roomId, userId]);
-  // const getApiUpdateTimer = async () => {
-  //   await apiupdateTimer();
-  // };
+  const getApiUpdateTimer = async () => {
+    await apiupdateTimer();
+  };
+
   const apiUpdateUserRoom = async (roomId, userId) => {
     // const data = await apiUpdateUserIntoRoom(roomId, userId, {
     //   money: money || Number(moneyInput),
@@ -151,41 +156,65 @@ const DetailEvalute = () => {
     //   toast.error(data?.message);
     // }
   };
+  const [timerExpired, setTimerExpired] = useState(false);
+
   useEffect(() => {
     const countdownElement = document.getElementById("countdown");
 
     // Lấy thời gian kết thúc từ Local Storage hoặc đặt mặc định nếu chưa có
-    let endTime = localStorage.getItem("endTime");
-    if (!endTime) {
-      endTime = new Date().getTime() + Number(time) * 60 * 1000; // 3 phút từ bây giờ
-      localStorage.setItem("endTime", endTime);
-    }
+    // let endTime = localStorage.getItem("endTime");
+    // if (!endTime) {
+    //   endTime = new Date().getTime() + 3 * 60 * 1000; // 3 phút từ bây giờ
+    //   localStorage.setItem("endTime", endTime);
+    // }
 
-    function updateCountdown() {
+    async function updateCountdown() {
       const now = new Date().getTime();
-      const distance = endTime - now;
-      const hours = Math.floor(distance / (1000 * 60 * 60))
-        .toString()
-        .padStart(2, "0");
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
-        .toString()
-        .padStart(2, "0");
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000)
-        .toString()
-        .padStart(2, "0");
-
-      countdownElement.textContent = hours + " : " + minutes + " : " + seconds;
+      const distance = lottery?.timer - now;
       if (distance <= 0) {
-        clearInterval(intervalId);
-        apiUpdatedCountDown();
-        setTimeout(() => {
-          localStorage.removeItem("endTime");
+        if (!timerExpired) {
+          setTimerExpired(true);
+          getApiUpdateTimer();
+
+          // Gọi API chỉ khi thời gian đếm ngược kết thúc và chưa gọi API trước đó
           apiUpdateUserRoom(roomId, userId);
-          window.location.reload();
-          endTime = new Date().getTime() + Number(time) * 60 * 1000; // 3 phút từ bây giờ
-          localStorage.setItem("endTime", endTime);
-        }, 1000);
+        }
+
+        countdownElement.textContent = "00 : 00 : 00";
+        apiGetDetailsLottery(roomId, userId);
+      } else {
+        const hours = Math.floor(distance / (1000 * 60 * 60))
+          .toString()
+          .padStart(2, "0");
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+          .toString()
+          .padStart(2, "0");
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000)
+          .toString()
+          .padStart(2, "0");
+
+        countdownElement.textContent =
+          hours + " : " + minutes + " : " + seconds;
       }
+      // if (
+      //   distance <= 0 &&
+      //   hours <= "00" &&
+      //   minutes <= "00" &&
+      //   seconds <= "00"
+      // ) {
+      //   clearInterval(intervalId);
+
+      //   getApiUpdateTimer();
+      //   // apiUpdatedCountDown();
+      //   apiUpdateUserRoom(roomId, userId);
+      //   apiGetDetailsLottery(roomId, userId);
+      //   // setTimeout(() => {
+
+      //   // window.location.reload();
+      //   // endTime = new Date().getTime() + 3 * 60 * 1000; // 3 phút từ bây giờ
+      //   // localStorage.setItem("endTime", endTime);
+      //   // }, 1000);
+      // }
     }
 
     // Cập nhật đếm ngược mỗi giây
@@ -193,80 +222,105 @@ const DetailEvalute = () => {
     updateCountdown();
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [timer, timerExpired, roomId, userId, lottery]);
+
+  const dbName = "myDatabase";
+  const storeName = "endTimeStore";
+
   // useEffect(() => {
-  //   const countdownElement = document.getElementById("countdown");
-  //   async function updateCountdown() {
-  //     const apiGetDetailsLottery = async (roomId, userId) => {
-  //       const data = await apiGetLotteryById(roomId, userId);
-  //       if (data?.success) {
-  //         setLottery(data?.evaluates);
-  //         setEndTime(data?.evaluates?.timer);
+  //   // Mở IndexedDB
+  //   const openRequest = indexedDB.open(dbName, 1);
+  //   openRequest.onupgradeneeded = (event) => {
+  //     const db = event.target.result;
+  //     db.createObjectStore(storeName);
+  //   };
+
+  //   openRequest.onsuccess = async (event) => {
+  //     const db = event.target.result;
+  //     const tx = db.transaction(storeName, "readwrite");
+  //     const store = tx.objectStore(storeName);
+
+  //     // Lấy endTime từ IndexedDB
+  //     const getEndTimeRequest = store.get("endTime");
+
+  //     getEndTimeRequest.onsuccess = async (event) => {
+  //       let endTime = event?.target?.result;
+  //       if (!endTime) {
+  //         const putEndTimeRequest = store.put(
+  //           new Date().getTime() + 3 * 60 * 1000,
+  //           "endTime"
+  //         );
+  //         await apiupdateTimer({
+  //           endTime: new Date().getTime() + 3 * 60 * 1000,
+  //         });
+  //         putEndTimeRequest.onsuccess = () => {
+  //           console.log("endTime đã được cập nhật trong IndexedDB");
+  //         };
   //       }
+  //       const countdownElement = document.getElementById("countdown");
+  //       async function updateCountdown() {
+  //         const now = new Date().getTime();
+  //         const distance = endTime - now;
+  //         const hours = Math.floor(distance / (1000 * 60 * 60))
+  //           .toString()
+  //           .padStart(2, "0");
+  //         const minutes = Math.floor(
+  //           (distance % (1000 * 60 * 60)) / (1000 * 60)
+  //         )
+  //           .toString()
+  //           .padStart(2, "0");
+  //         const seconds = Math.floor((distance % (1000 * 60)) / 1000)
+  //           .toString()
+  //           .padStart(2, "0");
+  //         countdownElement.textContent =
+  //           hours + " : " + minutes + " : " + seconds;
+  //         if (distance <= 0) {
+  //           clearInterval(intervalId);
+  //           const deleteEndTimeRequest = store.delete("endTime");
+  //           deleteEndTimeRequest.onsuccess = () => {
+  //             console.log("endTime đã được cập nhật trong IndexedDB");
+  //           };
+  //           apiUpdatedCountDown();
+  //           apiUpdateUserRoom(roomId, userId);
+  //           window.location.reload();
+  //           // Lưu lại endTime mới vào IndexedDB
+  //           const putEndTimeRequest = store.put(
+  //             new Date().getTime() + 3 * 60 * 1000,
+  //             "endTime"
+  //           );
+  //           await apiupdateTimer({
+  //             endTime: new Date().getTime() + 3 * 60 * 1000,
+  //           });
+  //           putEndTimeRequest.onsuccess = () => {
+  //             console.log("endTime đã được cập nhật trong IndexedDB");
+  //           };
+  //         }
+  //       }
+
+  //       // Cập nhật đếm ngược mỗi giây
+  //       let intervalId = setInterval(updateCountdown, 1000);
+  //       updateCountdown();
+
+  //       return () => clearInterval(intervalId);
   //     };
-  //     getApiUpdateTimer();
-  //     apiGetDetailsLottery(roomId, userId);
-  //     const hours = Math.floor(endTime / (1000 * 60 * 60))
-  //       .toString()
-  //       .padStart(2, "0");
-  //     const minutes = Math.floor((endTime % (1000 * 60 * 60)) / (1000 * 60))
-  //       .toString()
-  //       .padStart(2, "0");
-  //     const seconds = Math.floor((endTime % (1000 * 60)) / 1000)
-  //       .toString()
-  //       .padStart(2, "0");
-  //     countdownElement.textContent = hours + " : " + minutes + " : " + seconds;
-  //     console.log(endTime);
-  //     // if (endTime <= 1000) {
-  //     //   // getApiUpdateTimer();
-  //     //   apiUpdatedCountDown();
-  //     //   setTimeout(() => {
-  //     //     apiUpdateUserRoom(roomId, userId);
-  //     //   }, 1000);
-  //     //   setEndTime(null); // Clear local state
-  //     // }
-  //   }
-  //   let intervalId = setInterval(updateCountdown, 1000);
-  //   updateCountdown();
 
-  //   return () => clearInterval(intervalId);
-  // }, [endTime]);
+  //     // Nếu không tìm thấy endTime, tạo mới
+  //     getEndTimeRequest.onerror = async () => {
+  //       const putEndTimeRequest = store.put(
+  //         new Date().getTime() + 3 * 60 * 1000,
+  //         "endTime"
+  //       );
+  //       await apiupdateTimer({ endTime: new Date().getTime() + 3 * 60 * 1000 });
+  //       putEndTimeRequest.onsuccess = () => {
+  //         // ...
+  //       };
+  //     };
 
-  // useEffect(() => {
-  //   const countdownElement = document.getElementById("countdown");
-
-  //   // Lấy thời gian kết thúc từ Local Storage hoặc đặt mặc định nếu chưa có
-  //   async function updateCountdown() {
-  //     const hours = Math.floor(lottery?.timer / (1000 * 60 * 60))
-  //       .toString()
-  //       .padStart(2, "0");
-  //     const minutes = Math.floor(
-  //       (lottery?.timer % (1000 * 60 * 60)) / (1000 * 60)
-  //     )
-  //       .toString()
-  //       .padStart(2, "0");
-  //     const seconds = Math.floor((lottery?.timer % (1000 * 60)) / 1000)
-  //       .toString()
-  //       .padStart(2, "0");
-
-  //     countdownElement.textContent = hours + " : " + minutes + " : " + seconds;
-  //     // if (lottery?.timer <= 0) {
-  //     //   localStorage.removeItem("endTime");
-  //     //   clearInterval(intervalId);
-  //     //   apiUpdatedCountDown();
-  //     //   setTimeout(() => {
-  //     //     apiUpdateUserRoom(roomId, userId);
-  //     //     location.reload();
-  //     //   }, 1000);
-  //     // }
-  //   }
-
-  //   // Cập nhật đếm ngược mỗi giây
-  //   let intervalId = setInterval(updateCountdown, 1000);
-  //   updateCountdown();
-
-  //   return () => clearInterval(intervalId);
-  // }, [endTime]);
+  //     tx.oncomplete = () => {
+  //       db.close();
+  //     };
+  //   };
+  // }, []);
   return (
     <div className="md:w-[50%] sm:w-full mx-auto bg-gray-100 h-screen relative">
       <div className="sticky w-full top-0">

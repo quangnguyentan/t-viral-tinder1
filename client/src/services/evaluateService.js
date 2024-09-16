@@ -15,7 +15,7 @@ export const apiupdateTimer = (data) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await axiosConfig({
-        method: "GET",
+        method: "PUT",
         url: `/evaluate/lottery/updateTime`,
         data,
       });

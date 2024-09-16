@@ -191,7 +191,7 @@ const Auth = () => {
             size={40}
           />
           <div className="bg-customColor w-full h-screen z-10 absolute">
-            <div className="absolute top-12 left-[35%] w-[220px] h-[168px]">
+            <div className="absolute top-12 left-[25%] w-[220px] h-[168px]">
               <img src={auth} alt="logo auth" />
             </div>
             <div className="absolute bottom-2 flex flex-col gap-10 items-center w-full ">

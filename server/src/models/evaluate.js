@@ -7,7 +7,10 @@ const evaluateSchema = new mongoose.Schema(
     periodNumber: {
       type: Array,
     },
-    timer: Number,
+    timer: {
+      type: Number,
+      default: () => new Date().getTime() + 3 * 60 * 1000,
+    },
     result: Array,
 
     resultUpdate: Array,

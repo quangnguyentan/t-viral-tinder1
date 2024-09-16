@@ -9,38 +9,23 @@ const updateTimer = async (req, res) => {
     let findRoom;
     findRoom = await evaluate.find();
     if (findRoom?.length === 0) throw new Error("Hiện tại chưa có phòng nào");
+    // let endTime = localStorage.getItem("endTime");
+    // if (!endTime) {
+    //   endTime = new Date().getTime() + 3 * 60 * 1000; // 3 phút từ bây giờ
+    //   localStorage.setItem("endTime", endTime);
+    // }
+    const updatePromises = findRoom.map(async (find) => {
+      // Perform updates inside the promise
+      return await evaluate.findOneAndUpdate(
+        { room: find?.room },
+        {
+          timer: new Date().getTime() + 3 * 60 * 1000,
+        },
+        { new: true }
+      );
+    });
 
-    let endTime = localStorage.getItem("endTime");
-    if (!endTime) {
-      endTime = new Date().getTime() + 3 * 60 * 1000;
-      localStorage.setItem("endTime", endTime);
-    }
-
-    async function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = endTime - now;
-      findRoom.map(async (find) => {
-        await evaluate.findOneAndUpdate(
-          { room: find?.room },
-          {
-            timer: distance,
-          },
-          { new: true }
-        );
-      });
-
-      if (findRoom[0].timer <= 0) {
-        console.log("reset");
-        localStorage.removeItem("endTime");
-        clearInterval(intervalId);
-        endTime = new Date().getTime() + 3 * 60 * 1000;
-        localStorage.setItem("endTime", endTime);
-      }
-    }
-    let intervalId = setInterval(updateCountdown, 1000);
-    // Cập nhật đếm ngược mỗi giây
-    updateCountdown();
-    return () => clearInterval(intervalId);
+    await Promise.all(updatePromises);
   } catch (error) {
     return res.status(500).json(error.message);
   }
@@ -92,7 +77,41 @@ const countdown = async (req, res) => {
 const updateLotteryAndUsers = async (req, res) => {
   try {
     const { userId, roomId } = req.params;
+    let findRoom;
+    findRoom = await evaluate.find();
+    console.log(findRoom[0]?.resultUpdate.length);
+    if (findRoom?.length === 0) throw new Error("Hiện tại chưa có phòng nào");
+    const updatePromises = findRoom.map(async (find) => {
+      // Perform updates inside the promise
+      return await evaluate.findOneAndUpdate(
+        { room: find?.room },
+        {
+          periodNumber: [...find.periodNumber, find.periodNumber.length + 1],
+          result: [
+            ...find.result,
+            find?.resultUpdate?.length > 0
+              ? find.resultUpdate.at(-1)
+              : getRandomTwo(array),
+          ],
+        },
+        { new: true }
+      );
+    });
 
+    await Promise.all(updatePromises);
+    const removedPromises = findRoom.map(async (find) => {
+      // Perform updates inside the promise
+      return await evaluate.findOneAndUpdate(
+        { room: find?.room },
+        {
+          $pullAll: {
+            resultUpdate: find?.resultUpdate,
+          },
+        },
+        { new: true }
+      );
+    });
+    await Promise.all(removedPromises);
     let data = await evaluate.findOne({ room: roomId });
     let getLottery = await evaluate.find();
     const findResults = getLottery?.map((eva) => {

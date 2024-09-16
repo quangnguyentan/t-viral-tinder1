@@ -16,7 +16,7 @@ const router = require("express").Router();
 const multer = require("multer");
 
 router.get("/lottery", getAllLottery);
-router.get("/lottery/updateTime", updateTimer);
+router.put("/lottery/updateTime", updateTimer);
 
 router.delete("/lottery/delete/:id", [verifyToken, isAdmin], deleteLotteryById);
 
